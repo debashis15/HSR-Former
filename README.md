@@ -1,264 +1,368 @@
 <div align="center">
 
 # HSR-Former
-### Hybrid Sparse Range Attention Transformer for High-Quality Image Restoration
+## Hybrid Sparse Range Attention Transformer for High-Quality Image Restoration
+
+**Accepted paper — IEEE Transactions on Consumer Electronics**
 
 **Debashis Das · Shivam Kripashankar Singh · Suman Kumar Maji**  
-Department of Computer Science & Engineering, Indian Institute of Technology Patna
+Department of Computer Science and Engineering, Indian Institute of Technology Patna, India
 
-[![Paper](https://img.shields.io/badge/IEEE%20TCE-Accepted-0A66C2?style=for-the-badge)](#citation)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.3%2B-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Tasks](https://img.shields.io/badge/Tasks-Denoising%20%7C%20LLIE%20%7C%20Deblurring-7B61FF?style=for-the-badge)](#supported-restoration-tasks)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.3%2B-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Tasks](https://img.shields.io/badge/Tasks-Denoising%20%7C%20Low--Light%20%7C%20Deblurring-6C63FF)](#supported-restoration-tasks)
+[![Parameters](https://img.shields.io/badge/Parameters-14.74M-success)](#architecture)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Official-style PyTorch repository for HSR-Former**, organized in the spirit of Restormer with separate task instructions, reproducible YAML configurations, training/testing scripts, a model-zoo interface, tiled inference, and Google Drive hooks for checkpoints and visual results.
+**[Paper: add final IEEE link] · [Pretrained Models](model_zoo.json) · [Visual Results](visual_results.json) · [Installation](INSTALL.md) · [Reproducibility](docs/REPRODUCIBILITY.md)**
 
 </div>
 
 ---
 
+## Overview
+
+HSR-Former is a hierarchical image-restoration Transformer designed to combine **fine local structural modeling** with **sparse long-range spatial interaction**. The network contains:
+
+- **TIFB** — Texture-Infused Feature Block.
+- **TEB** — fixed multi-directional gradient texture extraction.
+- **HSLG-MHA** — Hybrid Sparse Local-Global Multi-Head Attention.
+- **SFAU** — local spatial feature attention branch.
+- **SRF-MHA** — head-wise dilated sparse region-focused attention branch.
+- **MBD-FFN** — five-branch depthwise feed-forward network with kernel sizes `1×1` through `5×5`.
+- Four-level pixel-unshuffle / pixel-shuffle encoder-decoder with additive skips and residual reconstruction.
+
+The paper evaluates one architecture across **synthetic denoising, real denoising, low-light enhancement, and motion deblurring**, while training task-specific weights.
+
+<p align="center">
+  <img src="assets/HSRFormer_architecture.png" width="100%" alt="HSR-Former architecture">
+</p>
+
+<p align="center"><b>HSR-Former architecture.</b></p>
+
+<p align="center">
+  <img src="assets/HSRFormer_attention_comparison.png" width="95%" alt="Attention comparison">
+</p>
+
+---
+
 ## News
 
-- **2026:** HSR-Former accepted for publication in *IEEE Transactions on Consumer Electronics*.
-- **Code release:** training, evaluation, demo, task configurations, architecture assets, and reproducibility notes are included in this repository.
-- **Model zoo / visual results:** Google Drive placeholders are already wired into the repository; replace them with your public links when weights and restored images are uploaded.
+- **2026** — HSR-Former accepted for publication in *IEEE Transactions on Consumer Electronics*.
+- **Code release** — This repository provides independent data-preparation, path-generation, training, testing, metric, demo, and release utilities for all tasks reported in the manuscript.
 
 ---
 
-## Abstract
+## Supported restoration tasks
 
-HSR-Former is a unified image-restoration Transformer designed to combine **fine local structural modeling** with **efficient long-range contextual aggregation**. It introduces: (1) a **Texture-Infused Feature Block (TIFB)** with fixed multi-directional gradient cues, (2) **Hybrid Sparse Local-Global Multi-Head Attention (HSLG-MHA)** combining **Spatial Feature Attention Unit (SFAU)** and **Sparse Region-Focused Multi-Head Attention (SRF-MHA)**, and (3) a **Multi-Branch Depthwise Feed-Forward Network (MBD-FFN)** for multi-scale token interaction. The same backbone is trained with independent task-specific weights for denoising, low-light enhancement, and motion deblurring.
+<table>
+<tr>
+  <th>Task</th><th>Training</th><th>Testing</th><th>Data preparation</th><th>Visual results</th>
+</tr>
+<tr>
+  <td>Gaussian grayscale denoising</td>
+  <td><a href="Denoising/README.md#5-train-synthetic-grayscale-denoising">Train</a></td>
+  <td><a href="Denoising/README.md#8-test-gaussian-grayscale-denoising">Test</a></td>
+  <td><a href="Denoising/README.md#2-prepare-clean-synthetic-denoising-data">Prepare</a></td>
+  <td>Google Drive placeholder in <code>visual_results.json</code></td>
+</tr>
+<tr>
+  <td>Gaussian color denoising</td>
+  <td><a href="Denoising/README.md#6-train-synthetic-color-denoising">Train</a></td>
+  <td><a href="Denoising/README.md#9-test-gaussian-color-denoising">Test</a></td>
+  <td><a href="Denoising/README.md#2-prepare-clean-synthetic-denoising-data">Prepare</a></td>
+  <td>Google Drive placeholder in <code>visual_results.json</code></td>
+</tr>
+<tr>
+  <td>Real image denoising</td>
+  <td><a href="Denoising/README.md#7-train-real-denoising-on-sidd">Train</a></td>
+  <td><a href="Denoising/README.md#10-test-real-denoising">Test</a></td>
+  <td><a href="Denoising/README.md#3-prepare-real-noise-data">Prepare</a></td>
+  <td>Google Drive placeholder in <code>visual_results.json</code></td>
+</tr>
+<tr>
+  <td>Low-light enhancement</td>
+  <td><a href="Low_Light_Enhancement/README.md#6-train-lol-v1">Train</a></td>
+  <td><a href="Low_Light_Enhancement/README.md#8-test-lol-v1">Test</a></td>
+  <td><a href="Low_Light_Enhancement/README.md#2-prepare-lol-v1">Prepare</a></td>
+  <td>Google Drive placeholder in <code>visual_results.json</code></td>
+</tr>
+<tr>
+  <td>Motion deblurring</td>
+  <td><a href="Motion_Deblurring/README.md#6-train-on-gopro">Train</a></td>
+  <td><a href="Motion_Deblurring/README.md#7-test-gopro">Test</a></td>
+  <td><a href="Motion_Deblurring/README.md#2-prepare-gopro">Prepare</a></td>
+  <td>Google Drive placeholder in <code>visual_results.json</code></td>
+</tr>
+</table>
 
 ---
 
-## Network Architecture
+## Architecture
 
-<p align="center">
-  <img src="assets/HSRFormer_architecture.png" width="100%" alt="HSR-Former Architecture">
-</p>
+The default model uses the manuscript-level settings:
 
-### Sparse attention design
+```text
+Feature dimensions : [48, 96, 192, 384]
+Transformer blocks : [ 4,  6,   6,   8]
+Attention heads    : [ 1,  2,   4,   8]
+Encoder            : Pixel-Unshuffle
+Decoder            : Pixel-Shuffle
+Loss               : L1
+Optimizer          : AdamW
+Training iterations: 320,000
+Patch size         : 128 × 128
+Initial LR         : 3e-4
+Final LR           : 1e-6
+Scheduler          : Cosine annealing
+```
 
-<p align="center">
-  <img src="assets/HSRFormer_attention_comparison.png" width="100%" alt="Window, shifted-window and proposed sparse attention comparison">
-</p>
+Default executable parameter count:
 
-### Core design at a glance
+```bash
+python scripts/model_info.py
+```
 
-| Component | Role |
-|---|---|
-| **TIFB** | Combines shallow convolutional features with fixed four-direction gradient texture cues. |
-| **TEB** | Uses horizontal, vertical, and two diagonal 3×3 gradient kernels. |
-| **HSLG-MHA** | Splits channels into local and global paths and fuses SFAU + SRF-MHA responses. |
-| **SFAU** | Builds a spatial saliency descriptor from channel-averaged local features and performs residual spatial gating. |
-| **SRF-MHA** | Restricts attention to dilated sparse key/value neighborhoods, avoiding dense all-token attention. |
-| **MBD-FFN** | Uses parallel depthwise kernels **1×1, 2×2, 3×3, 4×4, 5×5** followed by pointwise fusion and GELU. |
-| **Hierarchy** | Four levels with feature widths **[48, 96, 192, 384]**, blocks **[4, 6, 6, 8]**, and heads **[1, 2, 4, 8]**. |
-| **Sampling** | Pixel-unshuffle in the encoder and pixel-shuffle in the decoder with additive skip connections. |
-| **Reconstruction** | Final 3×3 convolution + residual addition to the degraded input. |
+```text
+14,740,159 parameters ≈ 14.74M
+```
 
-The default reference configuration contains **14.740M trainable parameters**, aligned with the 14.74M parameter count reported in the manuscript. See [`docs/IMPLEMENTATION_NOTES.md`](docs/IMPLEMENTATION_NOTES.md) for manuscript-specified settings and explicitly documented low-level defaults.
+The paper reports **14.74M parameters and 47.41 GMACs** for the proposed model. See [`docs/PAPER_TO_CODE.md`](docs/PAPER_TO_CODE.md) for the equation/module mapping and [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) for implementation-level parameters not numerically fixed by the manuscript.
 
 ---
 
-## Supported Restoration Tasks
+## Repository structure
 
-| Task | Training | Evaluation | Config | Pretrained Model | Visual Results |
-|---|---|---|---|---|---|
-| Gaussian grayscale denoising | [Instructions](Denoising/README.md#1-gaussian-grayscale-denoising) | [Instructions](Denoising/README.md#evaluation) | [`gaussian_gray.yml`](configs/denoising/gaussian_gray.yml) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) |
-| Gaussian color denoising | [Instructions](Denoising/README.md#2-gaussian-color-denoising) | [Instructions](Denoising/README.md#evaluation) | [`gaussian_color.yml`](configs/denoising/gaussian_color.yml) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) |
-| Real image denoising | [Instructions](Denoising/README.md#3-real-image-denoising) | [Instructions](Denoising/README.md#evaluation) | [`real_sidd.yml`](configs/denoising/real_sidd.yml) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) |
-| Low-light enhancement (LOL-v1) | [Instructions](Low_Light_Enhancement/README.md#training) | [Instructions](Low_Light_Enhancement/README.md#evaluation) | [`lolv1.yml`](configs/low_light/lolv1.yml) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) |
-| Low-light enhancement (FiveK) | [Instructions](Low_Light_Enhancement/README.md#mit-adobe-fivek) | [Instructions](Low_Light_Enhancement/README.md#mit-adobe-fivek) | [`fivek.yml`](configs/low_light/fivek.yml) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) |
-| Motion deblurring (GoPro) | [Instructions](Motion_Deblurring/README.md#training) | [Instructions](Motion_Deblurring/README.md#evaluation) | [`gopro.yml`](configs/deblurring/gopro.yml) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) |
-| Deblurring transfer (HIDE / RealBlur) | — | [Instructions](Motion_Deblurring/README.md#evaluation) | [`hide.yml`](configs/deblurring/hide.yml), [`realblur.yml`](configs/deblurring/realblur.yml) | GoPro-trained model | [Google Drive — add link](docs/GOOGLE_DRIVE_LINKS.md) |
+```text
+HSRFormer/
+├── README.md
+├── INSTALL.md
+├── train.py                         # generic trainer
+├── test.py                          # generic single-config evaluator
+├── demo.py                          # restore your own images
+├── model_zoo.json                   # Google Drive weight links
+├── visual_results.json              # Google Drive visual-result links
+│
+├── hsrformer/
+│   ├── models/
+│   │   └── hsrformer.py             # complete architecture
+│   ├── data/
+│   │   ├── datasets.py              # paired/Gaussian/unpaired datasets
+│   │   └── path_utils.py            # pairing + manifest utilities
+│   ├── engine/
+│   │   └── evaluation.py
+│   └── utils/
+│
+├── Denoising/
+│   ├── prepare_data.py              # synthetic + SIDD + paired datasets
+│   ├── generate_paths.py            # manifest generation
+│   ├── train_gaussian_gray.py
+│   ├── train_gaussian_color.py
+│   ├── train_real.py
+│   ├── test_gaussian_gray.py
+│   ├── test_gaussian_color.py
+│   ├── test_real.py
+│   ├── Options/
+│   └── README.md
+│
+├── Low_Light_Enhancement/
+│   ├── prepare_data.py              # LOL-v1/FiveK/no-reference
+│   ├── generate_paths.py
+│   ├── train_lolv1.py
+│   ├── train_fivek.py
+│   ├── test_lolv1.py
+│   ├── test_fivek.py
+│   ├── test_noref.py                # DICM/LIME/MEF/NPE + NIQE
+│   ├── Options/
+│   └── README.md
+│
+├── Motion_Deblurring/
+│   ├── prepare_data.py              # GoPro/HIDE/RealBlur
+│   ├── generate_paths.py
+│   ├── train_gopro.py
+│   ├── test_gopro.py
+│   ├── test_hide.py
+│   ├── test_realblur_j.py
+│   ├── test_realblur_r.py
+│   ├── Options/
+│   └── README.md
+│
+├── datasets/
+│   └── manifests/
+├── pretrained_models/
+├── results/
+├── scripts/
+├── docs/
+└── tests/
+```
 
 ---
 
 ## Installation
 
 ```bash
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/HSRFormer.git
+git clone https://github.com/<YOUR-USERNAME>/HSRFormer.git
 cd HSRFormer
 
 conda create -n hsrformer python=3.10 -y
 conda activate hsrformer
+
 pip install -r requirements.txt
+pip install -e .
 ```
 
-For detailed setup and CUDA notes, see [`INSTALL.md`](INSTALL.md).
-
-Quick verification:
+For LPIPS and NIQE:
 
 ```bash
-python -m compileall hsrformer train.py test.py demo.py
-pytest -q
+pip install -r requirements-perceptual.txt
 ```
+
+Full details: [`INSTALL.md`](INSTALL.md).
 
 ---
 
-## Dataset Layout
+# End-to-end reproduction
 
-HSR-Former uses two generic data modes so the training code remains compact and reusable.
+## A. Denoising
 
-### Paired restoration datasets
+### A1. Prepare datasets
 
-Use the same filenames in degraded/input and clean/target folders:
-
-```text
-datasets/
-└── low_light/LOLv1/
-    ├── train/
-    │   ├── low/
-    │   │   ├── 0001.png
-    │   │   └── ...
-    │   └── high/
-    │       ├── 0001.png
-    │       └── ...
-    └── test/
-        ├── low/
-        └── high/
+```bash
+python Denoising/prepare_data.py clean --source /data/BSD400   --name BSD400   --split train
+python Denoising/prepare_data.py clean --source /data/DIV2K    --name DIV2K    --split train
+python Denoising/prepare_data.py clean --source /data/Flickr2K --name Flickr2K --split train
+python Denoising/prepare_data.py sidd --source /data/SIDD_Medium_Srgb --split train
 ```
 
-The same convention is used for SIDD, GoPro, HIDE, RealBlur, and FiveK after adapting folder names in the YAML file.
+Add test datasets using the same script, then generate manifests:
 
-### Synthetic Gaussian denoising
-
-Store clean training images under:
-
-```text
-datasets/denoising/train/
-├── BSD400/
-├── DIV2K/
-└── Flickr2K/
+```bash
+python Denoising/generate_paths.py
 ```
 
-Gaussian noise is generated **on the fly**. The paper evaluates noise levels **σ = 30, 40, 50, 60**; these are already configured in the denoising YAML files.
+### A2. Train
+
+```bash
+python Denoising/train_gaussian_gray.py
+python Denoising/train_gaussian_color.py
+python Denoising/train_real.py
+```
+
+### A3. Test
+
+```bash
+python Denoising/test_gaussian_gray.py  --checkpoint pretrained_models/hsrformer_gaussian_gray.pth --dataset all --sigma all
+python Denoising/test_gaussian_color.py --checkpoint pretrained_models/hsrformer_gaussian_color.pth --dataset all --sigma all
+python Denoising/test_real.py           --checkpoint pretrained_models/hsrformer_real_sidd.pth --dataset all
+```
+
+Detailed instructions: [`Denoising/README.md`](Denoising/README.md).
 
 ---
 
-## Training
+## B. Low-light enhancement
 
-The paper uses independent task-specific weights with the same HSR-Former architecture. The supplied configurations follow the reported training recipe:
-
-- optimizer: **AdamW**
-- β₁ = **0.9**, β₂ = **0.999**
-- weight decay = **1×10⁻⁴**
-- loss: **L1**
-- total iterations: **320K**
-- learning rate: **3×10⁻⁴ → 1×10⁻⁶** with cosine annealing
-- crop size: **128×128**
-- augmentation: random rotation + horizontal flip
-
-### Single GPU
+### B1. Prepare LOL-v1
 
 ```bash
-python train.py --config configs/denoising/gaussian_color.yml
+python Low_Light_Enhancement/prepare_data.py lolv1 --source /data/LOL-v1
+python Low_Light_Enhancement/generate_paths.py
 ```
 
-or
+### B2. Train
 
 ```bash
-./train.sh configs/denoising/gaussian_color.yml 1
+python Low_Light_Enhancement/train_lolv1.py
 ```
 
-### Multi-GPU with `torchrun`
+### B3. Test paired metrics
 
 ```bash
-./train.sh configs/denoising/gaussian_color.yml 4
-```
-
-Equivalent:
-
-```bash
-torchrun --standalone --nproc_per_node=4 train.py \
-  --config configs/denoising/gaussian_color.yml
-```
-
-### Resume training
-
-```bash
-python train.py \
-  --config configs/denoising/gaussian_color.yml \
-  --resume experiments/gaussian_color/latest.pth
-```
-
-Checkpoints are written to the `experiment_dir` defined by each YAML file.
-
----
-
-## Evaluation
-
-### Gaussian color denoising
-
-```bash
-python test.py \
-  --config configs/denoising/gaussian_color.yml \
-  --checkpoint pretrained_models/hsrformer_gaussian_color.pth \
-  --output-dir results/gaussian_color \
-  --save-images
-```
-
-### Real image denoising
-
-```bash
-python test.py \
-  --config configs/denoising/real_sidd.yml \
-  --checkpoint pretrained_models/hsrformer_real_sidd.pth \
-  --output-dir results/sidd \
-  --save-images
-```
-
-### Low-light enhancement
-
-```bash
-python test.py \
-  --config configs/low_light/lolv1.yml \
+python Low_Light_Enhancement/test_lolv1.py \
   --checkpoint pretrained_models/hsrformer_lolv1.pth \
-  --output-dir results/lolv1 \
-  --save-images
+  --lpips
 ```
 
-### Motion deblurring
+### B4. Test no-reference NIQE
 
 ```bash
-python test.py \
-  --config configs/deblurring/gopro.yml \
-  --checkpoint pretrained_models/hsrformer_gopro.pth \
-  --output-dir results/gopro \
-  --save-images
+python Low_Light_Enhancement/test_noref.py \
+  --checkpoint pretrained_models/hsrformer_lolv1.pth \
+  --dataset DICM \
+  --niqe
 ```
 
-### High-resolution / memory-limited evaluation
+Detailed instructions: [`Low_Light_Enhancement/README.md`](Low_Light_Enhancement/README.md).
 
-Use overlapping tiled inference:
+---
+
+## C. Motion deblurring
+
+### C1. Prepare GoPro
 
 ```bash
-python test.py \
-  --config configs/deblurring/realblur.yml \
+python Motion_Deblurring/prepare_data.py gopro --source /data/GoPro
+python Motion_Deblurring/generate_paths.py
+```
+
+### C2. Train
+
+```bash
+python Motion_Deblurring/train_gopro.py
+```
+
+### C3. Test
+
+```bash
+python Motion_Deblurring/test_gopro.py      --checkpoint pretrained_models/hsrformer_gopro.pth
+python Motion_Deblurring/test_hide.py       --checkpoint pretrained_models/hsrformer_gopro.pth
+python Motion_Deblurring/test_realblur_j.py --checkpoint pretrained_models/hsrformer_gopro.pth
+python Motion_Deblurring/test_realblur_r.py --checkpoint pretrained_models/hsrformer_gopro.pth
+```
+
+Detailed instructions: [`Motion_Deblurring/README.md`](Motion_Deblurring/README.md).
+
+---
+
+## Multi-GPU training
+
+All tasks use the same distributed trainer:
+
+```bash
+torchrun --nproc_per_node=4 train.py \
+  --config Denoising/Options/GaussianColor_HSRFormer.yml
+```
+
+Change the YAML path for low-light/deblurring.
+
+---
+
+## Tiled testing for large images
+
+Testing automatically pads non-multiple-of-8 inputs. Large images can additionally be tiled:
+
+```bash
+python Motion_Deblurring/test_realblur_j.py \
   --checkpoint pretrained_models/hsrformer_gopro.pth \
   --tile 512 \
-  --tile-overlap 64 \
-  --save-images
+  --tile-overlap 64
 ```
 
-The test script reports per-image and average **PSNR / SSIM** and optionally saves restored PNG files.
-
-For **LPIPS** (paired low-light) and **NIQE** (no-reference low-light) evaluation, install the optional perceptual dependencies and run [`scripts/evaluate_perceptual.py`](scripts/evaluate_perceptual.py).
+The same options are available for real denoising and low-light testing.
 
 ---
 
-## Demo on Your Own Images
+## Demo on your own image/folder
 
 ```bash
 python demo.py \
-  --task Low_Light_Enhancement \
-  --checkpoint pretrained_models/hsrformer_lolv1.pth \
+  --task Motion_Deblurring \
+  --checkpoint pretrained_models/hsrformer_gopro.pth \
   --input demo/degraded \
   --result-dir demo/restored
 ```
 
-Available task names:
+Supported task names:
 
 ```text
 Gaussian_Gray_Denoising
@@ -270,7 +374,9 @@ Motion_Deblurring
 
 ---
 
-## Paper Results
+## Paper results
+
+The accepted manuscript reports the following representative results.
 
 ### Real denoising
 
@@ -282,10 +388,12 @@ Motion_Deblurring
 
 ### Low-light enhancement
 
-| Dataset | PSNR ↑ | SSIM ↑ | LPIPS ↓ |
+| Dataset | PSNR | SSIM | LPIPS ↓ |
 |---|---:|---:|---:|
 | LOL-v1 | **24.48** | **0.868** | **0.119** |
 | MIT-Adobe FiveK | **24.79** | **0.927** | **0.060** |
+
+No-reference NIQE reported by the paper: DICM **3.71**, LIME **3.69**, MEF **3.74**, NPE **3.80**.
 
 ### Motion deblurring
 
@@ -295,112 +403,41 @@ Motion_Deblurring
 | HIDE | **31.37** | **0.949** |
 | RealBlur | **32.70** | **0.932** |
 
-### Complexity reported in the paper
-
-| Params | MACs | PolyU inference time | PolyU PSNR / SSIM |
-|---:|---:|---:|---:|
-| **14.74M** | **47.41G** | **0.18 s** | **40.25 / 0.973** |
-
-> Reproducing exact benchmark numbers requires the authors' released checkpoints, identical dataset preprocessing, and the evaluation protocol used for the manuscript.
-
-The paper also includes a YOLOv8 downstream experiment on ExDark. Because the manuscript specifies the 80:20 split but does not fully enumerate the detector training hyperparameters, this repository intentionally does not invent an exact detector recipe; restored ExDark images can be generated with `demo.py` and evaluated using the detector configuration used by the authors.
-
 ---
 
-## Google Drive: Checkpoints and Visual Outputs
+## Pretrained weights and visual results via Google Drive
 
-This repository includes a ready-to-fill model/visual-results manifest:
+Large artifacts should not be committed to GitHub. Add your released URLs in:
 
 ```text
-docs/GOOGLE_DRIVE_LINKS.md
 model_zoo.json
+visual_results.json
 ```
 
-After uploading files or folders to Google Drive, replace the placeholders in `model_zoo.json`. Users can then download a file or entire folder with:
-
-```bash
-python scripts/download_gdrive.py --url "<GOOGLE_DRIVE_URL>" --output pretrained_models/model.pth
-```
-
-For a shared folder:
-
-```bash
-python scripts/download_gdrive.py --url "<GOOGLE_DRIVE_FOLDER_URL>" --output visual_results --folder
-```
-
-Recommended Drive structure:
-
-```text
-HSRFormer_Release/
-├── pretrained_models/
-│   ├── hsrformer_gaussian_gray.pth
-│   ├── hsrformer_gaussian_color.pth
-│   ├── hsrformer_real_sidd.pth
-│   ├── hsrformer_lolv1.pth
-│   ├── hsrformer_fivek.pth
-│   └── hsrformer_gopro.pth
-└── visual_results/
-    ├── gaussian_gray/
-    ├── gaussian_color/
-    ├── real_denoising/
-    ├── low_light/
-    └── deblurring/
-```
+Recommended Drive structure and download instructions are provided in [`docs/GOOGLE_DRIVE.md`](docs/GOOGLE_DRIVE.md).
 
 ---
 
-## Repository Structure
+## Configuration files
+
+Every task has its own YAML file. For example:
 
 ```text
-HSRFormer/
-├── README.md
-├── INSTALL.md
-├── train.py
-├── test.py
-├── demo.py
-├── train.sh
-├── model_zoo.json
-├── requirements.txt
-├── assets/
-│   ├── HSRFormer_architecture.png
-│   └── HSRFormer_attention_comparison.png
-├── hsrformer/
-│   ├── models/hsrformer.py
-│   ├── data/datasets.py
-│   └── utils/
-├── configs/
-│   ├── denoising/
-│   ├── low_light/
-│   └── deblurring/
-├── Denoising/README.md
-├── Low_Light_Enhancement/README.md
-├── Motion_Deblurring/README.md
-├── scripts/
-├── pretrained_models/
-├── docs/
-└── tests/
+Denoising/Options/GaussianGray_HSRFormer.yml
+Denoising/Options/GaussianColor_HSRFormer.yml
+Denoising/Options/RealDenoising_HSRFormer.yml
+Low_Light_Enhancement/Options/LOLv1_HSRFormer.yml
+Low_Light_Enhancement/Options/FiveK_HSRFormer.yml
+Motion_Deblurring/Options/GoPro_HSRFormer.yml
 ```
 
----
-
-## Reproducibility Notes
-
-The manuscript specifies the high-level architecture and training protocol, but does not numerically define every implementation-level choice needed to execute code. The repository therefore **does not hide those choices**. They are centralized and documented in [`docs/IMPLEMENTATION_NOTES.md`](docs/IMPLEMENTATION_NOTES.md), including:
-
-- local/global channel split ratio;
-- exact sparse neighborhood kernel size;
-- mapping of dilation rates to heads when the number of heads exceeds three;
-- MBD-FFN internal projection ratio;
-- treatment of the deepest encoder/decoder notation in the architecture diagram;
-- refinement depth.
-
-The defaults are selected to be consistent with the figure, equations, reported stage configuration, and the reported **14.74M** parameter count.
+This makes batch size, data manifests, dilation schedule, model width, training iterations and optimizer settings explicit and editable.
 
 ---
 
 ## Citation
 
-If this repository or HSR-Former is useful in your research, please cite:
+Please update DOI/volume/pages when the final IEEE bibliographic record becomes available.
 
 ```bibtex
 @article{das2026hsrformer,
@@ -408,20 +445,24 @@ If this repository or HSR-Former is useful in your research, please cite:
   author  = {Das, Debashis and Singh, Shivam Kripashankar and Maji, Suman Kumar},
   journal = {IEEE Transactions on Consumer Electronics},
   year    = {2026},
-  note    = {Accepted}
+  note    = {Accepted for publication}
 }
 ```
 
-Update the BibTeX with volume, issue, pages, and DOI when IEEE publishes the final bibliographic record.
+---
+
+## Reproducibility note
+
+The code directly follows the architecture shown in the manuscript and exposes manuscript-unspecified low-level parameters rather than silently presenting them as published constants. Read [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) before releasing checkpoints intended for exact paper reproduction.
 
 ---
 
 ## Contact
 
-For questions related to the method or official checkpoints, please open a GitHub issue or contact the paper authors through their institutional contact details.
+For questions about the paper or released checkpoints, open a GitHub issue or add the corresponding author email after the repository is published.
 
 ---
 
 ## Acknowledgment
 
-The repository layout is inspired by the clean task-oriented release style of **Restormer**. The HSR-Former model implementation, task configurations, and training/evaluation code in this repository are organized specifically around the architecture and experiments described in the HSR-Former manuscript.
+The repository organization is inspired by well-maintained image-restoration codebases such as Restormer, with task-specific preparation/training/testing instructions and external hosting for large pretrained models and visual results.

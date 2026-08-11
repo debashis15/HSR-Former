@@ -1,20 +1,17 @@
 <div align="center">
 
 # HSR-Former
-## Hybrid Sparse Range Attention Transformer for High-Quality Image Restoration
-
-**Accepted paper — IEEE Transactions on Consumer Electronics**
+### Hybrid Sparse Range Attention Transformer for High-Quality Image Restoration
 
 **Debashis Das · Shivam Kripashankar Singh · Suman Kumar Maji**  
-Department of Computer Science and Engineering, Indian Institute of Technology Patna, India
+Department of Computer Science & Engineering, Indian Institute of Technology Patna
 
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.3%2B-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Tasks](https://img.shields.io/badge/Tasks-Denoising%20%7C%20Low--Light%20%7C%20Deblurring-6C63FF)](#supported-restoration-tasks)
-[![Parameters](https://img.shields.io/badge/Parameters-14.74M-success)](#architecture)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Paper](https://img.shields.io/badge/IEEE%20TCE-Accepted-0A66C2?style=for-the-badge)](#citation)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.3%2B-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Tasks](https://img.shields.io/badge/Tasks-Denoising%20%7C%20LLIE%20%7C%20Deblurring-7B61FF?style=for-the-badge)](#supported-restoration-tasks)
 
-**[Paper: add final IEEE link] · [Pretrained Models](model_zoo.json) · [Visual Results](visual_results.json) · [Installation](INSTALL.md) · [Reproducibility](docs/REPRODUCIBILITY.md)**
+**Official-style PyTorch repository for HSR-Former**, organized in the spirit of Restormer with separate task instructions, reproducible YAML configurations, training/testing scripts, a model-zoo interface, tiled inference, and Google Drive hooks for checkpoints and visual results.
 
 </div>
 

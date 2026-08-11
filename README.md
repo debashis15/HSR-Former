@@ -402,6 +402,59 @@ No-reference NIQE reported by the paper: DICM **3.71**, LIME **3.69**, MEF **3.7
 
 ---
 
+## 📊 Results
+
+Full tables — including all four noise levels, every ablation and per-class
+detection scores — in [**`docs/RESULTS.md`**](docs/RESULTS.md).
+
+### Efficiency (PolyU, 512 × 512, A100) — Table VIII
+
+| Method | Params (M) ↓ | Depth ↓ | MACs (G) ↓ | Time (s) ↓ | PSNR ↑ | SSIM ↑ |
+|---|---|---|---|---|---|---|
+| MPRNet | 21 | 66 | 587 | 1.64 | 39.84 | 0.966 |
+| SwinIR | 31.78 | 58 | 98.40 | 0.79 | 39.87 | 0.970 |
+| Uformer | 50.88 | 114 | 89.60 | 0.69 | 39.95 | 0.963 |
+| Restormer | 25.31 | 52 | 141.20 | 0.39 | 39.93 | 0.968 |
+| SSAMAN | 18.38 | 58 | 82.6 | 0.31 | 40.18 | 0.970 |
+| DSwinIR | 24 | — | 73.83 | 0.32 | 40.15 | 0.969 |
+| **HSR-Former** | **14.74** | **42** | **47.41** | **0.18** | **40.25** | **0.973** |
+
+### Denoising
+
+| Benchmark | σ | Restormer | SSAMAN | DSwinIR | **HSR-Former** |
+|---|---|---|---|---|---|
+| BSD68 (gray) | 30 | 29.11/0.823 | 29.13/0.830 | 29.10/0.828 | **29.24/0.838** |
+| CBSD68 (colour) | 30 | 30.26/0.848 | 30.41/0.859 | 30.45/0.860 | **30.54/0.866** |
+| CUrban100 | 30 | 31.32/0.869 | 31.34/0.868 | 31.29/0.866 | **31.38/0.872** |
+| SIDD (real) | — | 40.02/0.960 | 40.07/0.965 | 40.04/0.963 | **40.19/0.966** |
+| PolyU (real) | — | 39.93/0.968 | 40.17/0.970 | 40.15/0.969 | **40.25/0.973** |
+| Nam (real) | — | 40.34/0.989 | 40.34/0.989 | 40.30/0.988 | **40.40/0.990** |
+
+### Low-light enhancement — Table IV
+
+| Method | LOL PSNR ↑ | LOL SSIM ↑ | LOL LPIPS ↓ | FiveK PSNR ↑ | FiveK SSIM ↑ | FiveK LPIPS ↓ |
+|---|---|---|---|---|---|---|
+| MIRNetv2 | 24.41 | 0.8326 | 0.1250 | 24.62 | 0.9110 | 0.0800 |
+| RetinexFormer | 24.01 | 0.8611 | 0.1200 | 24.42 | 0.9190 | 0.0680 |
+| LLFormer | 23.64 | 0.8594 | 0.1330 | 23.80 | 0.9140 | 0.0710 |
+| AST-v2 | 24.10 | 0.8613 | 0.1202 | 24.61 | 0.9199 | 0.0687 |
+| **HSR-Former** | **24.48** | **0.8680** | **0.1190** | **24.79** | **0.9270** | **0.0600** |
+
+Lowest NIQE on all four no-reference sets (DICM 3.71, LIME 3.69, MEF 3.74, NPE
+3.80) and **0.770 mAP** on ExDark low-light detection.
+
+### Motion deblurring — Table VI
+
+| Method | GoPro | HIDE | RealBlur |
+|---|---|---|---|
+| Restormer | 32.92/0.961 | 31.22/0.942 | 32.58/0.918 |
+| MPRNet | 32.66/0.959 | 30.96/0.939 | 32.35/0.913 |
+| RUN | 33.14/0.963 | 30.92/0.933 | — |
+| AST-v2 | 33.12/0.962 | 31.28/0.933 | 32.61/0.921 |
+| **HSR-Former** | **33.25/0.965** | **31.37/0.949** | **32.70/0.932** |
+
+
+
 ## Pretrained weights and visual results via Google Drive
 
 Large artifacts should not be committed to GitHub. Add your released URLs in:
